@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniPortal — Course Management System</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* Landing page specific styles */
+    .landing-page {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .landing-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      color: white;
+    }
+
+    .landing-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .landing-brand i {
+      color: #38bdf8;
+      font-size: 28px;
+    }
+
+    .landing-nav-links {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .landing-nav-links a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s;
+      color: white;
+    }
+
+    .landing-nav-links a.student-link {
+      background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .landing-nav-links a.student-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+    }
+
+    .landing-nav-links a.admin-link {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .landing-nav-links a.admin-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+    }
+
+    .landing-hero {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      gap: 60px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .landing-hero-text {
+      flex: 1;
+      color: white;
+    }
+
+    .landing-hero-text h1 {
+      font-size: 48px;
+      font-weight: 800;
+      margin: 0 0 20px 0;
+      line-height: 1.2;
+    }
+
+    .landing-hero-text h1 span {
+      background: linear-gradient(135deg, #38bdf8, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .landing-hero-text p {
+      font-size: 18px;
+      color: #94a3b8;
+      margin: 0 0 30px 0;
+      line-height: 1.6;
+    }
+
+    .landing-features {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .landing-feature {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #cbd5e1;
+      font-size: 14px;
+    }
+
+    .landing-feature i {
+      color: #10b981;
+    }
+
+    .landing-role-cards {
+      display: flex;
+      gap: 20px;
+    }
+
+    .landing-role-card {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 30px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: white;
+      min-width: 200px;
+    }
+
+    .landing-role-card:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-5px);
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .landing-role-card.student:hover {
+      border-color: #10b981;
+    }
+
+    .landing-role-card.admin:hover {
+      border-color: #f59e0b;
+    }
+
+    .landing-role-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin: 0 auto 16px;
+    }
+
+    .landing-role-card.student .landing-role-icon {
+      background: linear-gradient(135deg, #10b981, #34d399);
+    }
+
+    .landing-role-card.admin .landing-role-icon {
+      background: linear-gradient(135deg, #f59e0b, #fbbf24);
+    }
+
+    .landing-role-card h3 {
+      margin: 0 0 8px 0;
+      font-size: 20px;
+    }
+
+    .landing-role-card p {
+      margin: 0;
+      font-size: 14px;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    .landing-role-btn {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .landing-role-card.student .landing-role-btn {
+      background: #10b981;
+      color: white;
+    }
+
+    .landing-role-card.student .landing-role-btn:hover {
+      background: #059669;
+    }
+
+    .landing-role-card.admin .landing-role-btn {
+      background: #f59e0b;
+      color: white;
+    }
+
+    .landing-role-card.admin .landing-role-btn:hover {
+      background: #d97706;
+    }
+
+    .landing-visual {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .landing-mockup {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 30px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .mockup-header {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .mockup-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .mockup-dot:nth-child(1) { background: #ef4444; }
+    .mockup-dot:nth-child(2) { background: #f59e0b; }
+    .mockup-dot:nth-child(3) { background: #10b981; }
+
+    .mockup-content {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .mockup-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+    }
+
+    .mockup-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    }
+
+    .mockup-line {
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      flex: 1;
+    }
+
+    .mockup-line.short {
+      width: 60%;
+      flex: none;
+    }
+
+    .mockup-badge {
+      padding: 4px 12px;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      border-radius: 6px;
+      font-size: 12px;
+      color: white;
+    }
+
+    .landing-footer {
+      text-align: center;
+      padding: 20px;
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    @media (max-width: 968px) {
+      .landing-hero {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .landing-hero-text h1 {
+        font-size: 36px;
+      }
+
+      .landing-features {
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .landing-role-cards {
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .landing-visual {
+        display: none;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .landing-nav {
+        padding: 15px 20px;
+      }
+
+      .landing-hero {
+        padding: 20px;
+      }
+
+      .landing-hero-text h1 {
+        font-size: 28px;
+      }
+
+      .landing-role-card {
+        min-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body class="landing-page">
+
+  <!-- NAV -->
+  <nav class="landing-nav">
+    <div class="landing-brand">
+      <i class="fas fa-graduation-cap"></i>
+      <span>UniPortal</span>
+    </div>
+    <div class="landing-nav-links">
+      <a href="student-login.html" class="student-link"><i class="fas fa-user-graduate"></i> Student Login</a>
+      <a href="admin-login.html" class="admin-link"><i class="fas fa-user-shield"></i> Admin Login</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="landing-hero">
+    <div class="landing-hero-text">
+      <h1>Manage Your <span>Courses</span> with Ease</h1>
+      <p>A complete course management system for students and administrators. Register for classes, track enrollments, manage courses, and generate reports — all in one place.</p>
+
+      <div class="landing-features">
+        <div class="landing-feature">
+          <i class="fas fa-check-circle"></i>
+          <span>Course Registration</span>
+        </div>
+        <div class="landing-feature">
+          <i class="fas fa-check-circle"></i>
+          <span>Enrollment Tracking</span>
+        </div>
+        <div class="landing-feature">
+          <i class="fas fa-check-circle"></i>
+          <span>Analytics & Reports</span>
+        </div>
+      </div>
+
+      <div class="landing-role-cards">
+        <a href="student-register.html" class="landing-role-card student">
+          <div class="landing-role-icon">
+            <i class="fas fa-user-graduate"></i>
+          </div>
+          <h3>Student Portal</h3>
+          <p>Register for courses, view your schedule, and manage payments.</p>
+          <span class="landing-role-btn">Get Started <i class="fas fa-arrow-right"></i></span>
+        </a>
+
+        <a href="admin-register.html" class="landing-role-card admin">
+          <div class="landing-role-icon">
+            <i class="fas fa-user-shield"></i>
+          </div>
+          <h3>Admin Portal</h3>
+          <p>Manage courses, monitor enrollments, and generate reports.</p>
+          <span class="landing-role-btn">Get Started <i class="fas fa-arrow-right"></i></span>
+        </a>
+      </div>
+    </div>
+
+    <div class="landing-visual">
+      <div class="landing-mockup">
+        <div class="mockup-header">
+          <div class="mockup-dot"></div>
+          <div class="mockup-dot"></div>
+          <div class="mockup-dot"></div>
+        </div>
+        <div class="mockup-content">
+          <div class="mockup-row">
+            <div class="mockup-avatar"></div>
+            <div class="mockup-line"></div>
+            <div class="mockup-badge">CS101</div>
+          </div>
+          <div class="mockup-row">
+            <div class="mockup-avatar"></div>
+            <div class="mockup-line"></div>
+            <div class="mockup-badge">MATH</div>
+          </div>
+          <div class="mockup-row">
+            <div class="mockup-avatar"></div>
+            <div class="mockup-line short"></div>
+            <div class="mockup-badge">ENG</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="landing-footer">
+    <p>UniPortal Course Management System — Built with Firebase</p>
+  </footer>
+
+</body>
+</html>
+

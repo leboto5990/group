@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel — Course Management</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar dash-sidebar admin-sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <i class="fas fa-shield-alt"></i>
+      <span>AdminPortal</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" onclick="switchAdminTab('courses')">
+        <i class="fas fa-book"></i><span>Courses</span>
+      </a>
+      <a href="#" class="nav-item" onclick="switchAdminTab('enrollments')">
+        <i class="fas fa-users"></i><span>Enrollments</span>
+      </a>
+      <a href="#" class="nav-item" onclick="switchAdminTab('analytics')">
+        <i class="fas fa-chart-pie"></i><span>Analytics</span>
+      </a>
+      <a href="#" class="nav-item" onclick="switchAdminTab('reports')">
+        <i class="fas fa-file-pdf"></i><span>Reports</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button onclick="logout()" class="logout-btn">
+        <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN WRAPPER -->
+  <div class="main-wrapper">
+
+    <!-- NAVBAR -->
+    <header class="topbar">
+      <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="adminSearch" placeholder="Search courses or students...">
+      </div>
+      <div class="topbar-actions">
+        <div class="notif-icon">
+          <i class="fas fa-bell"></i>
+          <span class="badge" id="adminNotifCount">0</span>
+        </div>
+        <div class="user-dropdown" id="userDropdown">
+          <div class="user-trigger" onclick="toggleDropdown()">
+            <div class="avatar admin-avatar" id="adminAvatar">A</div>
+            <div class="user-info">
+              <span class="user-name" id="adminName">Admin</span>
+              <span class="user-role">Administrator</span>
+            </div>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="dropdown-menu" id="dropdownMenu">
+            <div class="dropdown-header">
+              <span id="adminDropdownEmail">admin@uni.ac.za</span>
+            </div>
+            <a href="#" onclick="switchAdminTab('courses')" class="dropdown-item"><i class="fas fa-book"></i> Manage Courses</a>
+            <a href="#" onclick="switchAdminTab('enrollments')" class="dropdown-item"><i class="fas fa-users"></i> Enrollments</a>
+            <div class="dropdown-divider"></div>
+            <a href="#" onclick="logout()" class="dropdown-item text-danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ADMIN CONTENT -->
+    <main class="content" id="adminContent">
+
+      <!-- Welcome Banner -->
+      <div class="welcome-banner admin-banner">
+        <div class="welcome-text">
+          <h1 id="adminWelcome">Admin Dashboard</h1>
+          <p>Manage courses, monitor enrollments, and generate reports.</p>
+        </div>
+        <div class="welcome-date">
+          <span id="adminCurrentDate"></span>
+        </div>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon bg-blue"><i class="fas fa-book"></i></div>
+          <div class="stat-info">
+            <span class="stat-value" id="statTotalCourses">0</span>
+            <span class="stat-label">Total Courses</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon bg-green"><i class="fas fa-users"></i></div>
+          <div class="stat-info">
+            <span class="stat-value" id="statTotalStudents">0</span>
+            <span class="stat-label">Total Enrollments</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon bg-orange"><i class="fas fa-chair"></i></div>
+          <div class="stat-info">
+            <span class="stat-value" id="statTotalCapacity">0</span>
+            <span class="stat-label">Total Capacity</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon bg-purple"><i class="fas fa-percentage"></i></div>
+          <div class="stat-info">
+            <span class="stat-value" id="statFillRate">0%</span>
+            <span class="stat-label">Fill Rate</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION: COURSES -->
+      <div class="data-card" id="adminCoursesSection">
+        <div class="toolbar">
+          <div class="toolbar-left"><h2>Manage Courses</h2></div>
+          <div class="toolbar-right">
+            <button onclick="openAddModal()" class="btn-primary"><i class="fas fa-plus"></i> Add Course</button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table" id="adminCoursesTable">
+            <thead>
+              <tr>
+                <th>Course Title</th>
+                <th>Enrolled</th>
+                <th>Capacity</th>
+                <th>Fill %</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="adminCoursesBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SECTION: ENROLLMENTS -->
+      <div class="data-card hidden" id="adminEnrollmentsSection">
+        <div class="toolbar">
+          <div class="toolbar-left"><h2>Student Enrollments</h2></div>
+        </div>
+        <div id="adminEnrollmentsList" class="course-list"></div>
+      </div>
+
+      <!-- SECTION: ANALYTICS -->
+      <div class="data-card hidden" id="adminAnalyticsSection">
+        <div class="toolbar">
+          <div class="toolbar-left"><h2>Enrollment Analytics</h2></div>
+        </div>
+        <div class="charts-grid">
+          <div class="chart-card">
+            <h4>Bar Chart</h4>
+            <canvas id="barChart"></canvas>
+          </div>
+          <div class="chart-card">
+            <h4>Pie Chart</h4>
+            <canvas id="pieChart"></canvas>
+          </div>
+          <div class="chart-card wide">
+            <h4>Trend Line</h4>
+            <canvas id="lineChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION: REPORTS -->
+      <div class="data-card hidden" id="adminReportsSection">
+        <div class="toolbar">
+          <div class="toolbar-left"><h2>Generate Reports</h2></div>
+        </div>
+        <div class="report-grid">
+          <div class="report-card">
+            <div class="report-info">
+              <i class="fas fa-file-pdf"></i>
+              <div>
+                <h4>Course Enrollment Report (PDF)</h4>
+                <p>Download a PDF containing all courses and their current enrollment numbers.</p>
+              </div>
+            </div>
+            <button onclick="generatePDF()" class="btn-primary"><i class="fas fa-download"></i> Download PDF</button>
+          </div>
+          <div class="report-card">
+            <div class="report-info">
+              <i class="fas fa-file-csv"></i>
+              <div>
+                <h4>Course Summary (CSV)</h4>
+                <p>Export course data including codes, schedules, capacities, and fill rates.</p>
+              </div>
+            </div>
+            <button onclick="generateCSV('enrollment')" class="btn-primary"><i class="fas fa-download"></i> Download CSV</button>
+          </div>
+          <div class="report-card">
+            <div class="report-info">
+              <i class="fas fa-users"></i>
+              <div>
+                <h4>Student Enrollment List (CSV)</h4>
+                <p>Export all student enrollments with course and date information.</p>
+              </div>
+            </div>
+            <button onclick="generateCSV('students')" class="btn-primary"><i class="fas fa-download"></i> Download CSV</button>
+          </div>
+          <div class="report-card">
+            <div class="report-info">
+              <i class="fas fa-money-bill-wave"></i>
+              <div>
+                <h4>Payment Report (CSV)</h4>
+                <p>Export payment records with amounts, dates, and status.</p>
+              </div>
+            </div>
+            <button onclick="generateCSV('payments')" class="btn-primary"><i class="fas fa-download"></i> Download CSV</button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ADD COURSE MODAL -->
+    <div class="modal-overlay hidden" id="addModal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Add New Course</h3>
+          <button onclick="closeAddModal()" class="modal-close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+          <label>Course Title</label>
+          <input type="text" id="modalTitle" placeholder="e.g. Introduction to Programming">
+          <label>Course Code</label>
+          <input type="text" id="modalCourseCode" placeholder="e.g. CS101">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div>
+              <label>Credits</label>
+              <input type="number" id="modalCredits" value="3" min="1" max="6">
+            </div>
+            <div>
+              <label>Capacity</label>
+              <input type="number" id="modalCapacity" placeholder="100" value="100">
+            </div>
+          </div>
+          <label>Schedule</label>
+          <input type="text" id="modalSchedule" placeholder="e.g. MWF 10:00-11:00">
+        </div>
+        <div class="modal-footer">
+          <button onclick="closeAddModal()" class="btn-secondary">Cancel</button>
+          <button onclick="submitAddCourse()" class="btn-primary">Add Course</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUTH LOADING -->
+    <div class="auth-loader" id="authLoader">
+      <div class="loader-spinner"></div>
+      <p>Checking your session...</p>
+    </div>
+
+    <!-- AUTH OVERLAY -->
+    <div class="auth-overlay hidden" id="adminAuthOverlay">
+      <div class="auth-card">
+        <div class="auth-brand"><i class="fas fa-shield-alt"></i> AdminPortal</div>
+        <div class="auth-tabs">
+          <button class="auth-tab active" onclick="switchAuthTab('login')">Admin Login</button>
+          <button class="auth-tab" onclick="switchAuthTab('register')">Register</button>
+        </div>
+        <div class="auth-form" id="adminLoginForm">
+          <h2>Welcome Back</h2>
+          <p>Sign in to admin dashboard</p>
+          <input type="email" id="authAdminEmail" placeholder="Email address">
+          <input type="password" id="authAdminPassword" placeholder="Password">
+          <button onclick="adminAuthLogin()" class="btn-primary btn-full">Sign In</button>
+          <p class="auth-alt">Need access? <a href="#" onclick="switchAuthTab('register')">Register admin</a></p>
+        </div>
+        <div class="auth-form hidden" id="adminRegisterForm">
+          <h2>Create Admin Account</h2>
+          <p>Register as administrator</p>
+          <input type="email" id="authAdminRegEmail" placeholder="Email address">
+          <input type="password" id="authAdminRegPassword" placeholder="Password (min 6 chars)">
+          <button onclick="adminAuthRegister()" class="btn-primary btn-full">Create Account</button>
+          <p class="auth-alt">Have an account? <a href="#" onclick="switchAuthTab('login')">Login</a></p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script type="module" src="admin.js"></script>
+</body>
+</html>
+

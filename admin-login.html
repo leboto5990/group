@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Login - Course Management</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .auth-container { max-width: 420px; width: 100%; padding: 20px; }
+    .auth-form {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 35px;
+      border-radius: 16px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.35);
+      color: white;
+    }
+    .auth-form h2 {
+      margin: 0 0 6px 0;
+      font-size: 24px;
+    }
+    .auth-form h3 {
+      margin: 0 0 20px 0;
+      font-size: 14px;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+    .auth-brand {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    .auth-brand i {
+      font-size: 40px;
+      color: #f59e0b;
+      margin-bottom: 10px;
+    }
+    .auth-brand span {
+      display: block;
+      font-size: 22px;
+      font-weight: 700;
+    }
+    input[type="email"], input[type="password"] {
+      width: 100%;
+      padding: 14px 16px;
+      margin: 8px 0;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 10px;
+      box-sizing: border-box;
+      background: rgba(255,255,255,0.08);
+      color: white;
+      font-size: 14px;
+      outline: none;
+      transition: border 0.2s;
+    }
+    input[type="email"]::placeholder, input[type="password"]::placeholder {
+      color: #64748b;
+    }
+    input[type="email"]:focus, input[type="password"]:focus {
+      border-color: #f59e0b;
+    }
+    .btn-register-link {
+      display: block;
+      padding: 14px;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: white;
+      text-align: center;
+      text-decoration: none;
+      border-radius: 10px;
+      margin: 10px 0 15px 0;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    .btn-register-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+    }
+    .auth-footer {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+    .auth-footer a {
+      color: #38bdf8;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .auth-footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+<div class="auth-container">
+  <div class="auth-form">
+    <div class="auth-brand">
+      <i class="fas fa-user-shield"></i>
+      <span>Admin Portal</span>
+    </div>
+
+    <div id="loginForm">
+      <h3>Login or Register</h3>
+      <a href="admin-register.html" class="btn-register-link"><i class="fas fa-user-plus"></i> Register Admin</a>
+      <input id="loginEmail" type="email" placeholder="Email address">
+      <input id="loginPassword" type="password" placeholder="Password">
+      <button onclick="login()"><i class="fas fa-sign-in-alt"></i> Login</button>
+      <p class="auth-footer">Registered? Login above | <a href="student-login.html">Student Portal <i class="fas fa-arrow-right"></i></a></p>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { auth } from './firebase.js';
+  import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+  import { db } from './firebase.js';
+  import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
+
+window.login = async () => {
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      if (error.code === 'auth/user-not-found') {
+        alert('User not found. Please register first.');
+        window.location.href = 'admin-register.html';
+      } else {
+        alert('Invalid credentials. Check email/password.');
+      }
+    }
+  };
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      if (userDoc.exists() && userDoc.data().role === 'admin') {
+        window.location.href = 'admin.html';
+      } else {
+        alert('Student account - use Student Portal');
+        signOut(auth);
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
+
+

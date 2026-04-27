@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard — Course Management</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- SIDEBAR BACKDROP -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar dash-sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <i class="fas fa-graduation-cap"></i>
+      <span>UniPortal</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" onclick="switchTab('courses')">
+        <i class="fas fa-book-open"></i><span>Courses</span>
+      </a>
+      <a href="#" class="nav-item" onclick="switchTab('schedule')">
+        <i class="fas fa-calendar-check"></i><span>My Schedule</span>
+      </a>
+      <a href="#" class="nav-item" onclick="switchTab('payments')">
+        <i class="fas fa-credit-card"></i><span>Payments</span>
+      </a>
+      <a href="#" class="nav-item" onclick="switchTab('profile')">
+        <i class="fas fa-user"></i><span>Profile</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button onclick="logout()" class="logout-btn">
+        <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN WRAPPER -->
+  <div class="main-wrapper">
+
+    <!-- NAVBAR -->
+    <header class="topbar">
+      <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="courseSearch" placeholder="Search courses...">
+      </div>
+      <div class="topbar-actions">
+      <div class="notif-icon" onclick="toggleNotifPanel()" id="notifBell">
+          <i class="fas fa-bell"></i>
+          <span class="badge" id="notifCount">0</span>
+          <div class="notif-panel hidden" id="notifPanel">
+            <div class="notif-header"><strong>Notifications</strong></div>
+            <div class="notif-list" id="notifList">
+              <p class="notif-empty">No notifications yet</p>
+            </div>
+            <div class="notif-footer" onclick="event.stopPropagation(); markAllRead()">Mark all as read</div>
+          </div>
+        </div>
+        <div class="user-dropdown" id="userDropdown">
+          <div class="user-trigger" onclick="toggleDropdown()">
+            <div class="avatar" id="userAvatar">S</div>
+            <div class="user-info">
+              <span class="user-name" id="userName">Student</span>
+              <span class="user-role">Undergraduate</span>
+            </div>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="dropdown-menu" id="dropdownMenu">
+            <div class="dropdown-header">
+              <span id="dropdownEmail">student@uni.ac.za</span>
+            </div>
+            <a href="#" onclick="switchTab('profile')" class="dropdown-item"><i class="fas fa-user-circle"></i> My Profile</a>
+            <a href="#" onclick="switchTab('schedule')" class="dropdown-item"><i class="fas fa-calendar"></i> My Schedule</a>
+            <div class="dropdown-divider"></div>
+            <a href="#" onclick="logout()" class="dropdown-item text-danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- DASHBOARD CONTENT (Authenticated) -->
+    <main class="content" id="dashboardContent">
+
+      <!-- Welcome Banner -->
+      <div class="welcome-banner">
+        <div class="welcome-text">
+          <h1 id="welcomeMessage">Welcome back!</h1>
+          <p>Here is what's happening with your courses today.</p>
+        </div>
+        <div class="welcome-date">
+          <span id="currentDate"></span>
+        </div>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon bg-blue"><i class="fas fa-book"></i></div>
+          <div class="stat-info">
+            <span class="stat-value" id="statCourses">0</span>
+            <span class="stat-label">Enrolled Courses</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon bg-green"><i class="fas fa-check-circle"></i></div>
+          <div class="stat-info">
+            <span class="stat-value" id="statCredits">0</span>
+            <span class="stat-label">Credits</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon bg-orange"><i class="fas fa-money-bill-wave"></i></div>
+          <div class="stat-info">
+            <span class="stat-value" id="statDue">R12,000</span>
+            <span class="stat-label">Fees Due</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon bg-purple"><i class="fas fa-clock"></i></div>
+          <div class="stat-info">
+            <span class="stat-value" id="statHours">0</span>
+            <span class="stat-label">Class Hours</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <h2 id="sectionTitle">Available Courses</h2>
+        </div>
+        <div class="toolbar-right">
+          <div class="custom-select">
+            <i class="fas fa-filter"></i>
+            <select id="courseFilter">
+              <option value="All">All Departments</option>
+              <option value="CS">Computer Science</option>
+              <option value="MATH">Mathematics</option>
+              <option value="ENG">Engineering</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Course Table -->
+      <div class="data-card" id="coursesSection">
+        <div class="table-responsive">
+          <table class="data-table" id="coursesTable">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Course Title</th>
+                <th>Credits</th>
+                <th>Schedule</th>
+                <th>Seats</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="coursesBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- My Schedule -->
+      <div class="data-card hidden" id="scheduleSection">
+        <h3>My Schedule (<span id="scheduleCount">0</span> Courses)</h3>
+        <div id="myCoursesList" class="course-list"></div>
+      </div>
+
+      <!-- Payments -->
+      <div class="data-card hidden" id="paymentsSection">
+        <h3>Payment Summary</h3>
+        <div class="payment-grid">
+          <div class="payment-card">
+            <span class="payment-label">Total Fees</span>
+            <span class="payment-value">R<span id="totalFees">12,000</span></span>
+          </div>
+          <div class="payment-card">
+            <span class="payment-label">Paid</span>
+            <span class="payment-value paid">R<span id="paidAmount">0</span></span>
+          </div>
+          <div class="payment-card">
+            <span class="payment-label">Due</span>
+            <span class="payment-value due">R<span id="dueAmount">12,000</span></span>
+          </div>
+        </div>
+        <button onclick="makePayment()" class="btn-primary btn-large"><i class="fas fa-credit-card"></i> Make Payment</button>
+      </div>
+
+      <!-- Profile -->
+      <div class="data-card hidden" id="profileSection">
+        <h3>My Profile</h3>
+        <div class="profile-display">
+          <div class="profile-avatar" id="profileAvatar">S</div>
+          <div class="profile-details">
+            <p><strong>Email:</strong> <span id="profileEmail">-</span></p>
+            <p><strong>Role:</strong> Student</p>
+            <p><strong>Status:</strong> <span class="badge-success">Active</span></p>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- AUTH LOADING -->
+    <div class="auth-loader" id="authLoader">
+      <div class="loader-spinner"></div>
+      <p>Checking your session...</p>
+    </div>
+
+    <!-- AUTH OVERLAY (Unauthenticated) -->
+    <div class="auth-overlay hidden" id="authOverlay">
+      <div class="auth-card">
+        <div class="auth-brand"><i class="fas fa-graduation-cap"></i> UniPortal</div>
+        <div class="auth-tabs">
+          <button class="auth-tab active" onclick="switchAuthTab('login')">Login</button>
+          <button class="auth-tab" onclick="switchAuthTab('register')">Register</button>
+        </div>
+
+        <!-- Login Form -->
+        <div class="auth-form" id="loginForm">
+          <h2>Welcome Back</h2>
+          <p>Sign in to access your dashboard</p>
+          <input type="email" id="authLoginEmail" placeholder="Email address">
+          <input type="password" id="authLoginPassword" placeholder="Password">
+          <button onclick="authLogin()" class="btn-primary btn-full">Sign In</button>
+          <p class="auth-alt">Don't have an account? <a href="#" onclick="switchAuthTab('register')">Register</a></p>
+        </div>
+
+        <!-- Register Form -->
+        <div class="auth-form hidden" id="registerForm">
+          <h2>Create Account</h2>
+          <p>Register to start enrolling in courses</p>
+          <input type="email" id="authRegEmail" placeholder="Email address">
+          <input type="password" id="authRegPassword" placeholder="Password (min 6 chars)">
+          <button onclick="authRegister()" class="btn-primary btn-full">Create Account</button>
+          <p class="auth-alt">Already have an account? <a href="#" onclick="switchAuthTab('login')">Login</a></p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module" src="dashboard.js"></script>
+</body>
+</html>
+
